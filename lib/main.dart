@@ -1,6 +1,6 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'flutter_api.dart';
+import 'pigeon.dart';
 
 void main() => runApp(const MyApp());
 
@@ -31,24 +31,40 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const platform = MethodChannel('com.bqt.test/base_channel');
-  String _batteryLevel = '点击获取电量';
   int _counter = 0;
+  TestBookApi api = TestBookApi(); // 注意，引用的是 lib/pigeon.dart 下的类，而不是 pigeons 目录下的
+  TestAsyApi asyApi = TestAsyApi();
+
+  @override
+  void initState() {
+    super.initState();
+    TestFlutterApi.setup(TestFlutterApiImpl()); // 同样需要在使用前注入 method channel
+  }
 
   void _incrementCounter() {
     setState(() => _counter++); // This call to setState causes rerun the build method below
-    _getBatteryLevel().then((value) {
-      debugPrint(value);
-      setState(() => _batteryLevel = "$value 第 $_counter 次获取");
-    });
+    callNativeMethod(); // 在合适的时机调用 method channel
   }
 
-  Future<String> _getBatteryLevel() async {
-    try {
-      final int result = await platform.invokeMethod('getBatteryLevel');
-      return '电量 $result % .';
-    } on PlatformException catch (e) {
-      return "获取失败: '${e.message}'.";
+  void callNativeMethod() {
+    if (_counter % 5 == 0) {
+      api.search("哈哈").then((book) {
+        if (book != null) {
+          debugPrint("查询结果：${book.id} - ${book.title}");
+          Author? author = book.author;
+          if (author != null) {
+            debugPrint("作者信息：${author.name} - ${author.male} - ${author.state}");
+          }
+        }
+      });
+    } else if (_counter == 1) {
+      api.searchList("哈哈哈").then((list) => debugPrint("返回数量 ${list.length}"));
+    } else if (_counter == 2) {
+      api.searchList2(["啊", "哈"]).then((list) => debugPrint("返回数量 ${list.length}"));
+    } else if (_counter == 3) {
+      api.testNoArguments();
+    } else {
+      asyApi.calculate(10088).then((value) => debugPrint("返回值为 $value"));
     }
   }
 
@@ -69,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center, // center the children vertically
           children: <Widget>[
             const Text('这是一个 const Text'),
-            Text('共点击了 $_counter 次\n$_batteryLevel'),
+            Text('共点击了 $_counter 次'),
           ],
         ),
       ),
