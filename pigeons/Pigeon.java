@@ -359,6 +359,53 @@ public class Pigeon {
       }
     }
   }
+  private static class TestTaskQueueApiCodec extends StandardMessageCodec {
+    public static final TestTaskQueueApiCodec INSTANCE = new TestTaskQueueApiCodec();
+    private TestTaskQueueApiCodec() {}
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
+  public interface TestTaskQueueApi {
+    @NonNull Long add(@NonNull Long x, @NonNull Long y);
+
+    /** The codec used by TestTaskQueueApi. */
+    static MessageCodec<Object> getCodec() {
+      return TestTaskQueueApiCodec.INSTANCE;
+    }
+
+    /** Sets up an instance of `TestTaskQueueApi` to handle messages through the `binaryMessenger`. */
+    static void setup(BinaryMessenger binaryMessenger, TestTaskQueueApi api) {
+      {
+        BinaryMessenger.TaskQueue taskQueue = binaryMessenger.makeBackgroundTaskQueue();
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.TestTaskQueueApi.add", getCodec(), taskQueue);
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number xArg = (Number)args.get(0);
+              if (xArg == null) {
+                throw new NullPointerException("xArg unexpectedly null.");
+              }
+              Number yArg = (Number)args.get(1);
+              if (yArg == null) {
+                throw new NullPointerException("yArg unexpectedly null.");
+              }
+              Long output = api.add((xArg == null) ? null : xArg.longValue(), (yArg == null) ? null : yArg.longValue());
+              wrapped.put("result", output);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
   private static class TestFlutterApiCodec extends StandardMessageCodec {
     public static final TestFlutterApiCodec INSTANCE = new TestFlutterApiCodec();
     private TestFlutterApiCodec() {}

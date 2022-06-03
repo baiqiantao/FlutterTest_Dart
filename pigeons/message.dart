@@ -31,6 +31,13 @@ abstract class TestAsyApi {
   String calculate(int key); //默认生成同步的 handlers，可以使用 @async 注解异步响应消息
 }
 
+@HostApi()
+abstract class TestTaskQueueApi {
+  @TaskQueue(type: TaskQueueType.serialBackgroundThread)
+  // serialBackgroundThread: Handlers are invoked serially 连续的 on a background thread
+  // serial: Handlers are invoked serially on the default thread. This is the value if unspecified
+  int add(int x, int y);
+}
 // ------------------------------------- 定义 Flutter 方法 -------------------------------------
 
 @FlutterApi() // 使用注解 @FlutterApi 修饰的方法，是在 Flutter  中实现的，可以被 native 调用的方法

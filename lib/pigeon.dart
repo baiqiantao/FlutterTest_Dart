@@ -266,6 +266,48 @@ class TestAsyApi {
   }
 }
 
+class _TestTaskQueueApiCodec extends StandardMessageCodec {
+  const _TestTaskQueueApiCodec();
+}
+
+class TestTaskQueueApi {
+  /// Constructor for [TestTaskQueueApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  TestTaskQueueApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _TestTaskQueueApiCodec();
+
+  Future<int> add(int arg_x, int arg_y) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.TestTaskQueueApi.add', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_x, arg_y]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else if (replyMap['result'] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyMap['result'] as int?)!;
+    }
+  }
+}
+
 class _TestFlutterApiCodec extends StandardMessageCodec {
   const _TestFlutterApiCodec();
 }
