@@ -1,26 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart' as launcher;
 
-void main() => runApp(const MyApp(color: Colors.red));
-
-@pragma('vm:entry-point')
-void topMain() => runApp(const MyApp(color: Colors.green));
-
-@pragma('vm:entry-point')
-void bottomMain() => runApp(const MyApp(color: Colors.blue));
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.color});
-
-  final MaterialColor color;
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: color),
-      home: const MyHomePage(title: '演示 MultFlutter'),
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const MyHomePage(title: '演示 MethodChannel'),
     );
   }
 }
@@ -35,48 +26,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static const platform = MethodChannel('com.bqt.test/base_channel');
+  String _batteryLevel = '';
   int _counter = 0;
-  final _url = Uri.parse('https://www.cnblogs.com/baiqiantao/');
-  final MethodChannel _channel = const MethodChannel('multiple-flutters');
 
-  @override
-  void initState() {
-    super.initState();
-    _channel.setMethodCallHandler((call) async {
-      if (call.method == "setData") {
-        _counter = call.arguments as int;
-        setState(() => _counter);
-      }
+  void _incrementCounter() {
+    setState(() => _counter++); // This call to setState causes rerun the build method below
+    _getBatteryLevel().then((value) {
+      debugPrint(value);
+      setState(() => _batteryLevel = value);
     });
+  }
+
+  Future<String> _getBatteryLevel() async {
+    try {
+      final int result = await platform.invokeMethod('getBatteryLevel');
+      return '电量 $result % .';
+    } on PlatformException catch (e) {
+      return "获取失败: '${e.message}'.";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('当前的值为：$_counter'),
-            ElevatedButton(
-              child: const Text('将当前值 +1'),
-              onPressed: () => _channel.invokeMethod<void>("incrementCount", _counter),
-            ),
-            ElevatedButton(
-              child: const Text('跳到一个 native 页面'),
-              onPressed: () => _channel.invokeMethod<void>("next", _counter),
-            ),
-            ElevatedButton(
-              child: const Text('使用浏览器打开一个 url'),
-              onPressed: () async {
-                if (await launcher.canLaunchUrl(_url)) {
-                  await launcher.launchUrl(_url);
-                }
-              },
-            ),
-          ],
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('这是标题')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('电量 $_batteryLevel'),
+              Text('点击次数 $_counter'),
+            ],
+          ),
         ),
+        floatingActionButton: FloatingActionButton(onPressed: _incrementCounter),
       ),
     );
   }
