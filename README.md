@@ -1,6 +1,6 @@
 # qt_flutter_module
 
-A new Flutter project.
+Flutter 学习案例，Dart 模块
 
 ## Getting Started
 
