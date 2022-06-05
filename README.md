@@ -14,7 +14,7 @@ see the [add-to-app documentation](https://flutter.dev/docs/development/add-to-a
 - git remote show origin          # 查看远程仓库
 - git remote add origin xx        # 关联远程仓库
 - git remote remove origin      # 关联远程仓库
--  
+
 - git push -u origin master      # 提交到远程分支
 - git branch -u origin/xx         # 关联远程分支
 - git push origin HEAD:main   # 提交到不同名的远程分支
