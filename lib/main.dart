@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-void main() => runApp(const MyApp());
+@pragma('vm:entry-point')
+void main() => runApp(const MyApp(color: Colors.red));
+
+@pragma('vm:entry-point')
+void greenMain() => runApp(const MyApp(color: Colors.green));
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key, required this.color});
+
+  final MaterialColor color;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: '演示 MethodChannel'),
+      theme: ThemeData(primarySwatch: color),
+      home: const MyHomePage(title: '演示 MultFlutter'),
     );
   }
 }
@@ -26,42 +31,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const platform = MethodChannel('com.bqt.test/base_channel');
-  String _batteryLevel = '';
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() => _counter++); // This call to setState causes rerun the build method below
-    _getBatteryLevel().then((value) {
-      debugPrint(value);
-      setState(() => _batteryLevel = value);
-    });
-  }
-
-  Future<String> _getBatteryLevel() async {
-    try {
-      final int result = await platform.invokeMethod('getBatteryLevel');
-      return '电量 $result % .';
-    } on PlatformException catch (e) {
-      return "获取失败: '${e.message}'.";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('这是标题')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('电量 $_batteryLevel'),
-              Text('点击次数 $_counter'),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.title)),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [Text('main 是红色，greenMain 是绿色')],
         ),
-        floatingActionButton: FloatingActionButton(onPressed: _incrementCounter),
       ),
     );
   }
