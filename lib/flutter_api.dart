@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qt_flutter_module/pigeon.dart';
+import 'package:qt_flutter_test/pigeon.dart';
 
 class TestFlutterApiImpl extends TestFlutterApi {
   @override
