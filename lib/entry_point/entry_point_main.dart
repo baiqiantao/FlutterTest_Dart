@@ -1,46 +1,34 @@
 import 'package:flutter/material.dart';
+import '/entry_point/home_page_state.dart';
+
+// 以下方法可以指定应用程序的入口文件名和入口方法名，但是亲测后确认无效！
+// flutter run --target=lib/entry_point/entry_point_main.dart --dart-define=main=greenMain
+@pragma('vm:entry-point')
+void greenMain() => runApp(const MyApp(mColor: Colors.green));
 
 @pragma('vm:entry-point')
-void main() => runApp(const MyApp(color: Colors.red));
-
-@pragma('vm:entry-point')
-void greenMain() => runApp(const MyApp(color: Colors.green));
+void main() => runApp(const MyApp(mColor: Colors.red));
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.color});
+  const MyApp({super.key, required this.mColor});
 
-  final MaterialColor color;
+  final MaterialColor mColor;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: color),
-      home: const MyHomePage(title: '演示 MultFlutter'),
+      title: 'MyApp',
+      theme: ThemeData(primarySwatch: mColor),
+      home: const MyHomePage(mTitle: '演示 vm:entry-point'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.mTitle});
 
-  final String title;
+  final String mTitle;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [Text('main 是红色，greenMain 是绿色')],
-        ),
-      ),
-    );
-  }
+  State<MyHomePage> createState() => MyHomePageState();
 }
