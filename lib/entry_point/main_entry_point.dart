@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import '/entry_point/home_page_state.dart';
 
-// 以下方法可以指定应用程序的入口文件名和入口方法名，但是亲测后确认无效！
-// flutter run --target=lib/entry_point/entry_point_main.dart --dart-define=main=greenMain
+// 可以通过以下方法指定应用程序的【入口文件名】
+// flutter run --target=lib/entry_point/main_entry_point.dart
+
+// 可以通过以下方法指定应用程序的【入口方法名】
+// val pathToBundle = FlutterInjector.instance().flutterLoader().findAppBundlePath()
+// DartExecutor.DartEntrypoint(pathToBundle, entrypoint) // entrypoint 即为入口方法名
+
+// 可以通过以下方法指定应用程序的【启动参数】
+//通过【flutter run --dart-define=key=value】传值，并通过【String/int/bool.fromEnvironment】取值
+//通过【flutter run --dart-entrypoint-args xxx】传值，并通过【main 的 args 参数】取值 -- 移动端不支持
+
 @pragma('vm:entry-point')
 void greenMain() => runApp(const MyApp(mColor: Colors.green));
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/entry_point/entry_point_main.dart';
+import '/entry_point/main_entry_point.dart';
 
 class MyHomePageState extends State<MyHomePage> {
   @override
